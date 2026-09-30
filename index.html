@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 3 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 3 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 18</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 18 câu bài tập Shinkanzen N2 - Bài 3 (Trang 18 - 19)
+        const quizData = [
+            // Mục 1: ～てはじめて
+            {
+                q: '( ) はじめて、犬のかわいさがわかった。',
+                options: ['犬を飼って', '犬が小さくて', '犬がいなくて'],
+                answer: 0,
+                grammar: 'V-て + はじめて',
+                meaning: 'Chỉ sau khi trải qua/khi ở trạng thái... thì mới bắt đầu nhận ra hay có điều chưa từng có.',
+                trans: 'Chỉ sau khi nuôi chó, tôi mới hiểu được sự đáng yêu của chúng.'
+            },
+            {
+                q: '学校を卒業してはじめて、( )。',
+                options: ['勉強の大切さを知った', '親から独立しよう', 'うれしかった'],
+                answer: 0,
+                grammar: 'V-て + はじめて + Nhận ra/Thực hiện điều mới',
+                meaning: 'Vế sau diễn tả sự nhận thức hoặc điều mới xảy ra.',
+                trans: 'Chỉ sau khi tốt nghiệp trường học, tôi mới nhận ra tầm quan trọng của việc học.'
+            },
+            {
+                q: '親になってはじめて、( )。',
+                options: ['忙しかった', 'どうしたらいいかわからなかった', '子育ての難しさを感じた'],
+                answer: 2,
+                grammar: 'V-て + はじめて',
+                meaning: 'Chỉ sau khi ở vào vị trí/hoàn cảnh đó thì mới thấu hiểu.',
+                trans: 'Chỉ sau khi trở thành cha mẹ, tôi mới cảm nhận được sự khó khăn của việc nuôi dạy con cái.'
+            },
+            // Mục 2: ～上で
+            {
+                q: 'この書類をよく読み、はんこを ( ) 上で、提出してください。',
+                options: ['押す', '押して', '押した'],
+                answer: 2,
+                grammar: 'V-た形 + 上で',
+                meaning: 'Thực hiện hành động A làm bước chuẩn bị, sau đó mới thực hiện hành động B.',
+                trans: 'Xin vui lòng đọc kỹ tài liệu này, sau khi đóng dấu xong thì hãy nộp.'
+            },
+            {
+                q: 'この薬は、( ) 上でお飲みください。',
+                options: ['食事が終わった', '医師が説明した', '説明書をよく読んだ'],
+                answer: 2,
+                grammar: 'V-た形 + 上で',
+                meaning: 'Làm gì đó sau khi đã chuẩn bị/tìm hiểu kỹ.',
+                trans: 'Loại thuốc này xin hãy uống sau khi đã đọc kỹ hướng dẫn sử dụng.'
+            },
+            {
+                q: 'いくらぐらいかかるか ( ) 上で、修理をお願いするかどうか決めます。',
+                options: ['お知らせいただいた', 'お知らせくださった', 'お知らせしてあげた'],
+                answer: 0,
+                grammar: 'V-た形 + 上で (Khi người khác thực hiện hành động cho mình)',
+                meaning: 'Sau khi được thông báo/biết rõ thông tin.',
+                trans: 'Sau khi được quý vị thông báo xem tốn khoảng bao nhiêu tiền, tôi sẽ quyết định có nhờ sửa hay không.'
+            },
+            // Mục 3: ～次第
+            {
+                q: '全員 ( ) 次第、出発します。',
+                options: ['集まる', '集まり', '集まって'],
+                answer: 1,
+                grammar: 'V-ます + 次第',
+                meaning: 'Ngay sau khi... hoàn thành thì tiếp tục thực hiện hành động ngay (Trang trọng).',
+                trans: 'Ngay sau khi tất cả mọi người tập hợp đông đủ, chúng ta sẽ xuất phát.'
+            },
+            {
+                q: '( ) 次第、すぐお知らせください。',
+                options: ['体調が悪くなり', '事故が起こり', '現地からメールが届き'],
+                answer: 2,
+                grammar: 'V-ます + 次第',
+                meaning: 'Ngay khi sự việc dự kiến xảy ra thì thực hiện ngay.',
+                trans: 'Ngay sau khi nhận được email gửi từ hiện trường, xin hãy thông báo cho tôi ngay.'
+            },
+            {
+                q: '資料は、読み終わり次第、受付に ( )。',
+                options: ['お返しください', '返しました', '返していません'],
+                answer: 0,
+                grammar: 'V-ます + 次第 + Yêu cầu/Ý chí',
+                meaning: 'Vế sau đi với câu cầu khiến, yêu cầu hoặc nguyện vọng.',
+                trans: 'Tài liệu sau khi đọc xong xin vui lòng trả lại cho bộ phận lễ tân.'
+            },
+            // Mục 4: ～て以来・～てこのかた
+            {
+                q: '父は ( ) 以来、ずっと何か悩んでいるようだ。',
+                options: ['家に帰ってきて', '食事が終わって', '新しい職場に移って'],
+                answer: 2,
+                grammar: 'V-て + 以来',
+                meaning: 'Từ sau khi một mốc thời gian/sự việc diễn ra thì một trạng thái liên tục kéo dài đến nay.',
+                trans: 'Từ sau khi chuyển sang nơi làm việc mới, bố tôi có vẻ suốt ngày lo lắng điều gì đó.'
+            },
+            {
+                q: 'わたしはこの町に引っ越してきて以来、( )。',
+                options: ['前に住んでいた町のスーパーには行っていない', '一度この町のスーパーに行った', 'しばらくこの町のスーパーには行かなかった'],
+                answer: 0,
+                grammar: 'V-て + 以来 + Trạng thái kéo dài liên tục đến nay',
+                meaning: 'Vế sau thể hiện trạng thái tiếp diễn liên tục không đứt đoạn.',
+                trans: 'Từ sau khi chuyển đến thành phố này, tôi chưa từng đến siêu thị ở thị trấn cũ nữa.'
+            },
+            {
+                q: '兄がアメリカへ行ってこのかた、わたしが母の相談相手に ( )。',
+                options: ['なるつもりだ', 'なっている', 'なるだろう'],
+                answer: 1,
+                grammar: 'V-て + このかた',
+                meaning: 'Từ sau khi... cho đến nay luôn duy trì một trạng thái.',
+                trans: 'Từ sau khi anh trai sang Mỹ đến nay, tôi trở thành người tâm sự của mẹ.'
+            },
+            // Mục 5: ～てからでないと・～てからでなければ
+            {
+                q: '( ) からでないと、新しい事業に取りかかれない。',
+                options: ['車の運転ができて', 'いいアイディアがあって', 'お金の準備ができて'],
+                answer: 2,
+                grammar: 'V-て + からでないと / からでなければ',
+                meaning: 'Nếu chưa thực hiện xong A thì không thể làm B (Vế sau luôn mang tính phủ định).',
+                trans: 'Nếu chưa chuẩn bị xong tiền bạc thì không thể bắt tay vào dự án mới.'
+            },
+            {
+                q: 'この家を買うかどうかは、家族でよく話し合ってからでなければ ( )。',
+                options: ['1週間後にお返事します', '話し合いが始められない', 'お返事できません'],
+                answer: 2,
+                grammar: 'V-て + からでなければ + V-できない',
+                meaning: 'Vế sau luôn mang ý phủ định hoặc không thể thực hiện.',
+                trans: 'Việc có mua ngôi nhà này hay không, nếu chưa thảo luận kỹ với gia đình thì tôi không thể trả lời được.'
+            },
+            // Mục 1~5: Tổng hợp
+            {
+                q: '家族と ( )、引っ越し先を決めようと思います。',
+                options: ['相談してはじめて', '相談した上で', '相談してからこのかた'],
+                answer: 1,
+                grammar: 'V-た形 + 上で',
+                meaning: 'Thảo luận/Thực hiện A làm bước chuẩn bị rồi mới đưa ra quyết định B.',
+                trans: 'Sau khi thảo luận với gia đình, tôi định sẽ quyết định chuyển đến đâu.'
+            },
+            {
+                q: '一度駅で ( )、彼の姿を見ていない。',
+                options: ['会って以来', '会った上で', '会ってからでなければ'],
+                answer: 0,
+                grammar: 'V-て + 以来',
+                meaning: 'Kể từ sau một lần gặp đó thì liên tục duy trì trạng thái không gặp.',
+                trans: 'Kể từ sau khi gặp ở ga một lần, tôi không còn nhìn thấy bóng dáng anh ấy nữa.'
+            },
+            {
+                q: '彼と ( )、彼の大切さに気づいた。',
+                options: ['別れてはじめて', '別れ次第', '別れて以来'],
+                answer: 0,
+                grammar: 'V-て + はじめて',
+                meaning: 'Chỉ sau khi chia tay mới bắt đầu nhận ra điều quan trọng.',
+                trans: 'Chỉ sau khi chia tay anh ấy, tôi mới nhận ra sự quan trọng của anh.'
+            },
+            {
+                q: 'この会議が ( )、作業を始めなければならない。',
+                options: ['終わってからでないと', '終わってはじめて', '終わり次第'],
+                answer: 2,
+                grammar: 'V-ます + 次第',
+                meaning: 'Ngay sau khi cuộc họp kết thúc thì phải bắt đầu công việc ngay lập tức.',
+                trans: 'Ngay sau khi cuộc họp này kết thúc, chúng ta phải bắt tay vào công việc ngay.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
